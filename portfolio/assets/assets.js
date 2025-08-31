@@ -36,6 +36,8 @@ import younity from './younity.png';
 import github1 from './github1.png';
 import linkedin from './linkedin.png';
 import instagram from './instagram.png';
+import play from './play.png';
+import pause from './pause.png';
 
 export const assets = {
     user_image,
@@ -75,7 +77,9 @@ export const assets = {
     younity,
     github1,
     linkedin,
-    instagram
+    instagram,
+    play,
+    pause,
 };
 
 export const workData = [
