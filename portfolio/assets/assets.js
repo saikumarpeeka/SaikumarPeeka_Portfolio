@@ -122,5 +122,5 @@ export const infoList = [
 ];
 
 export const toolsData = [
-    assets.vscode, assets.mongodb, assets.git, assets.github, assets.postman
+    assets.vscode, assets.firebase assets.mongodb, assets.git, assets.github, assets.postman
 ];
