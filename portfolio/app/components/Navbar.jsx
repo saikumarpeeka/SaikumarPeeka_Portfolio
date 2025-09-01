@@ -38,6 +38,21 @@ const Navbar = () => {
     }
   };
 
+  // Pause audio when tab is hidden or minimized
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && audioRef.current && isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isPlaying]);
+
   return (
     <>
       {/* Hidden audio element */}
@@ -116,3 +131,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
