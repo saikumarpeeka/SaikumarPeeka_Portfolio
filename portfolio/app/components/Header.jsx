@@ -1,9 +1,34 @@
 import { assets } from '@/assets/assets'
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from "motion/react"
 
 const Header = () => {
+  const [downloadStatus, setDownloadStatus] = useState("");
+
+  const handleDownload = async (e) => {
+    e.preventDefault(); // prevent default <a> behavior
+    setDownloadStatus("Downloading...");
+
+    try {
+      const response = await fetch("/SaikumarPeeka_Resume.pdf");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "SaikumarPeeka_Resume.pdf";
+      link.click();
+
+      window.URL.revokeObjectURL(url);
+      setDownloadStatus("Downloaded");
+      setTimeout(() => setDownloadStatus(""), 2000); 
+    } catch (error) {
+      setDownloadStatus("Download failed");
+      setTimeout(() => setDownloadStatus(""), 2000);
+    }
+  };
+
   return (
     <div className='w-11/12 max-w-3xl text-center mx-auto h-screen flex flex-col items-center justify-center gap-4'>
       <motion.div
@@ -54,12 +79,22 @@ const Header = () => {
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 1.2 }}
           href="/SaikumarPeeka_Resume.pdf" 
-          download 
-          className='px-6 py-3 border rounded-full border-gray-500 flex items-center gap-2 whitespace-nowrap'>
+          onClick={handleDownload}
+          className='px-6 py-3 border rounded-full border-gray-500 flex items-center gap-2 whitespace-nowrap cursor-pointer'>
           My Resume 
           <Image src={assets.download_icon} alt='' className='w-4'/>
         </motion.a>
       </div>
+
+      {downloadStatus && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className='fixed bottom-5 right-5 bg-black text-white px-4 py-2 rounded-full shadow-lg'>
+          {downloadStatus}
+        </motion.div>
+      )}
     </div>
   )
 }
