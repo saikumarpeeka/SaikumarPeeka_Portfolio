@@ -1,7 +1,7 @@
 import { assets } from '@/assets/assets'
 import Image from 'next/image'
 import React, { useState } from 'react'
-import { motion } from "motion/react"   // <-- add motion
+import { motion } from "motion/react"
 
 const experiences = [
   {
@@ -33,9 +33,30 @@ const experiences = [
 
 const Experience = () => {
   const [clickedIndex, setClickedIndex] = useState(null);
+  const [downloadStatus, setDownloadStatus] = useState("");
 
-  const handleClick = (index) => {
+  const handleDownload = async (index, fileName) => {
     setClickedIndex(index);
+    setDownloadStatus("Downloading...");
+
+    try {
+      const response = await fetch(`/${fileName}`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.click();
+
+      window.URL.revokeObjectURL(url);
+      setDownloadStatus("Downloaded");
+      setTimeout(() => setDownloadStatus(""), 2000);
+    } catch (error) {
+      setDownloadStatus("Download failed");
+      setTimeout(() => setDownloadStatus(""), 2000);
+    }
+
     setTimeout(() => setClickedIndex(null), 300);
   };
 
@@ -124,10 +145,8 @@ const Experience = () => {
 
             {/* Download Button */}
             {exp.certificate && (
-              <motion.a 
-                href={exp.certificate} 
-                download 
-                onClick={() => handleClick(index)}
+              <motion.button 
+                onClick={() => handleDownload(index, exp.certificate)}
                 whileTap={{ scale: 0.9 }}
                 className={`group inline-flex items-center gap-2 px-6 py-2 border border-gray-500 rounded-full text-sm font-medium transition-all duration-300
                   ${clickedIndex === index 
@@ -140,11 +159,23 @@ const Experience = () => {
                   alt='' 
                   className={`w-4 transition duration-300 ${clickedIndex === index ? 'invert' : 'group-hover:invert'}`} 
                 />
-              </motion.a>
+              </motion.button>
             )}
           </motion.div>
         ))}
       </div>
+
+      {/* Download Toast */}
+      {downloadStatus && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className='fixed bottom-5 right-5 bg-black text-white px-4 py-2 rounded-full shadow-lg z-50'
+        >
+          {downloadStatus}
+        </motion.div>
+      )}
     </div>
   )
 }
